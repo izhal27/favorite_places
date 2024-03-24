@@ -1,3 +1,4 @@
+import 'package:favorite_places/widgets/detail_place.dart';
 import 'package:flutter/material.dart';
 
 import 'package:favorite_places/models/place.dart';
@@ -24,6 +25,12 @@ class _PlaceWidgetState extends State<PlaceWidget> {
     }
   }
 
+  void _showDetail(Place item) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => DetailPlace(place: item)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,11 +43,24 @@ class _PlaceWidgetState extends State<PlaceWidget> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: _listOfPlaces.length,
-        itemBuilder: ((context, index) {
-          return Text(_listOfPlaces[index].name);
-        }),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+          horizontal: 12,
+        ),
+        child: ListView.builder(
+          itemCount: _listOfPlaces.length,
+          itemBuilder: ((context, index) {
+            final item = _listOfPlaces[index];
+            return ListTile(
+              onTap: () => _showDetail(item),
+              title: Text(
+                item.name,
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
