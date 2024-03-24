@@ -18,7 +18,7 @@ class _NewPlaceState extends State<NewPlace> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       Navigator.of(context).pop<Place>(
-        Place(id: DateTime.now().toString(), name: _enteredName),
+        Place(name: _enteredName),
       );
     }
   }
