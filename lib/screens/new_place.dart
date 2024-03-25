@@ -29,7 +29,7 @@ class _NewPlaceState extends State<NewPlace> {
       appBar: AppBar(title: const Text("Tambah alamat baru")),
       body: Form(
         key: _formKey,
-        child: Container(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
