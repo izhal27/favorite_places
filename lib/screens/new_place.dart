@@ -1,63 +1,56 @@
+import 'package:favorite_places/models/place.dart';
+import 'package:favorite_places/providers/place_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:favorite_places/models/place.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NewPlace extends StatefulWidget {
+class NewPlace extends ConsumerStatefulWidget {
   const NewPlace({super.key});
 
   @override
-  State<NewPlace> createState() => _NewPlaceState();
+  ConsumerState<NewPlace> createState() => _NewPlaceState();
 }
 
-class _NewPlaceState extends State<NewPlace> {
-  var _enteredName = "";
+class _NewPlaceState extends ConsumerState<NewPlace> {
+  final _nameController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
-
-  void _addPlace() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      Navigator.of(context).pop<Place>(
-        Place(name: _enteredName),
-      );
-    }
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Tambah alamat baru")),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.place),
-                  label: Text("Nama"),
-                ),
-                style: const TextStyle(color: Colors.white),
-                initialValue: _enteredName,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Nama alamat tidak boleh kosong";
-                  }
-                  return null;
-                },
-                onSaved: (newValue) {
-                  _enteredName = newValue!;
-                },
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                icon: Icon(Icons.place),
+                label: Text("Nama"),
               ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: _addPlace,
-                label: const Text("Tambah Alamat"),
-                icon: const Icon(Icons.add),
-              ),
-            ],
-          ),
+              style: const TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                final name = _nameController.text;
+
+                if (name.trim().isNotEmpty) {
+                  final place = Place(name: name);
+                  ref.read(placeProvider.notifier).addPlace(place);
+                  Navigator.of(context).pop();
+                }
+              },
+              label: const Text("Tambah Alamat"),
+              icon: const Icon(Icons.add),
+            ),
+          ],
         ),
       ),
     );

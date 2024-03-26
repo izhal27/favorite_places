@@ -1,39 +1,18 @@
+import 'package:favorite_places/providers/place_provider.dart';
 import 'package:favorite_places/screens/detail_place.dart';
 import 'package:favorite_places/widgets/places_list.dart';
 import 'package:flutter/material.dart';
 
-import 'package:favorite_places/models/place.dart';
 import 'package:favorite_places/screens/new_place.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PlacesScreen extends StatefulWidget {
+class PlacesScreen extends ConsumerWidget {
   const PlacesScreen({super.key});
 
   @override
-  State<PlacesScreen> createState() => _PlacesScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final places = ref.watch(placeProvider);
 
-class _PlacesScreenState extends State<PlacesScreen> {
-  final List<Place> _listOfPlaces = [];
-
-  void _addPlace() async {
-    final result = await Navigator.of(context).push<Place>(
-      MaterialPageRoute(builder: (context) => const NewPlace()),
-    );
-    if (result != null) {
-      setState(() {
-        _listOfPlaces.add(result);
-      });
-    }
-  }
-
-  void _showDetail(Place item) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => DetailPlace(place: item)),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
     Widget content = Center(
         child: Text(
       "Belum ada alamat yang terdaftar.",
@@ -43,15 +22,21 @@ class _PlacesScreenState extends State<PlacesScreen> {
           .copyWith(color: Theme.of(context).colorScheme.onBackground),
     ));
 
-    if (_listOfPlaces.isNotEmpty) {
+    if (places.isNotEmpty) {
       content = Padding(
         padding: const EdgeInsets.symmetric(
           vertical: 10,
           horizontal: 12,
         ),
         child: PlacesListWidget(
-          places: _listOfPlaces,
-          onShowDetail: (item) => _showDetail(item),
+          places: places,
+          onShowDetail: (item) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => DetailPlace(place: item),
+              ),
+            );
+          },
         ),
       );
     }
@@ -61,7 +46,11 @@ class _PlacesScreenState extends State<PlacesScreen> {
         title: const Text("Alamat Anda"),
         actions: [
           IconButton(
-            onPressed: _addPlace,
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const NewPlace()),
+              );
+            },
             icon: const Icon(Icons.add),
           ),
         ],
